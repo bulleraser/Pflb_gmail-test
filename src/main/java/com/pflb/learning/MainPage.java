@@ -1,13 +1,9 @@
 package com.pflb.learning;
 
-
 import org.openqa.selenium.By;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-
 
 public class MainPage extends AbstractPage {
 
@@ -81,14 +77,11 @@ public class MainPage extends AbstractPage {
     }
 
     public void clickDrafts() {
-        //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         //driver.findElement(By.cssSelector("[title^=\"Черновики\"]")).click();
         driver.get("https://mail.google.com/mail/u/0/#drafts");
     }
 
     public void clickFirstMail(String subject) {
-        //wait.until(drvr -> btnFirstMail.isDisplayed());
-
         StringBuilder sb = new StringBuilder();
         sb.append("//*[text()='");
         sb.append(subject);
@@ -102,10 +95,6 @@ public class MainPage extends AbstractPage {
             WebElement fmail = driver.findElement(By.xpath(sb.toString()));
             fmail.click();
         }
-//        //driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-//        WebElement fmail = driver.findElement(By.xpath(sb.toString()));
-//        //wait.until(drvr -> fmail.isDisplayed());
-//        fmail.click();
     }
 
     public String getMailBody() {
