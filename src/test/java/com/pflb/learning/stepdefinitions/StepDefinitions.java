@@ -212,7 +212,7 @@ public class StepDefinitions {
 
     @Тогда("^оно то самое только что созданное письмо$")
     public void checkMailInDrafts() {
-        Assert.assertEquals(message, mainPage.getMailBody());
+        Assert.assertEquals(mainPage.getMailBody(), message);
         log.info("This mail is saved successfully in drafts");
     }
 
@@ -238,6 +238,8 @@ public class StepDefinitions {
     public void checkSentMail() {
         Assert.assertEquals(to.startsWith(mainPage.getSentTo()), true);
         Assert.assertEquals(mainPage.getSentSubject(), subject);
+        log.info("The message is added to sent list");
+        Assert.assertEquals(mainPage.getSentMessage(), message);
         log.info("The message is successfully sent");
     }
 

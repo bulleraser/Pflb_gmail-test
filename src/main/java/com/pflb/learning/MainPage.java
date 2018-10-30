@@ -128,6 +128,19 @@ public class MainPage extends AbstractPage {
         return txtSubjectSend.getText();
     }
 
+    public String getSentMessage() {
+        driver.findElement(By.xpath("//*[text()='Кому: ']")).click();
+        try {
+            WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
+            wait.until(drvr -> txtMessage.isDisplayed());
+            return txtMessage.getText();
+        } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+            WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
+            wait.until(drvr -> txtMessage.isDisplayed());
+            return txtMessage.getText();
+        }
+    }
+
     public void clickLogOut() {
         driver.findElement(By.cssSelector("[aria-label^=\"Аккаунт Google:\"]")).click();
         WebElement btnQuit = driver.findElement(By.xpath(".//*[text()='Выйти']"));
