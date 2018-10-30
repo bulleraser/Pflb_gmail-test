@@ -55,9 +55,15 @@ public class LoginPage extends AbstractPage {
 
     public boolean checkFillPassword() {
         try {
-            WebElement passwordField = driver.findElement(By.cssSelector("input[type=\"password\"]"));
-            wait.until(drvr -> passwordField.isDisplayed());
-            return true;
+            try {
+                WebElement passwordField = driver.findElement(By.cssSelector("input[type=\"password\"]"));
+                wait.until(drvr -> passwordField.isDisplayed());
+                return true;
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                WebElement passwordField = driver.findElement(By.cssSelector("input[type=\"password\"]"));
+                wait.until(drvr -> passwordField.isDisplayed());
+                return true;
+            }
         } catch (NoSuchElementException ex) {
             return false;
         }

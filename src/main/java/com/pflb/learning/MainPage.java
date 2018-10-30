@@ -129,7 +129,15 @@ public class MainPage extends AbstractPage {
     }
 
     public String getSentMessage() {
-        driver.findElement(By.xpath("//*[text()='Кому: ']")).click();
+        try {
+            WebElement firstMessage = driver.findElement(By.xpath("//*[text()='Кому: ']"));
+            wait.until(drvr -> firstMessage.isDisplayed());
+            firstMessage.click();
+        } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+            WebElement firstMessage = driver.findElement(By.xpath("//*[text()='Кому: ']"));
+            wait.until(drvr -> firstMessage.isDisplayed());
+            firstMessage.click();
+        }
         try {
             WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
             wait.until(drvr -> txtMessage.isDisplayed());
