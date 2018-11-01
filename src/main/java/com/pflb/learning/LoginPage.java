@@ -1,10 +1,8 @@
 package com.pflb.learning;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class LoginPage extends AbstractPage {
     @FindBy(css = "input[type=\"email\"]")
@@ -56,10 +54,16 @@ public class LoginPage extends AbstractPage {
     public boolean checkFillPassword() {
         try {
             try {
+                Alert alert = driver.switchTo().alert();
+                String alertText = alert.getText();
+                System.out.println("Alert data: " + alertText);
+                alert.accept();
+                wait.until(ExpectedConditions.urlContains("signin"));
                 WebElement passwordField = driver.findElement(By.cssSelector("input[type=\"password\"]"));
                 wait.until(drvr -> passwordField.isDisplayed());
                 return true;
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+            } catch (NoAlertPresentException e) {
+                wait.until(ExpectedConditions.urlContains("signin"));
                 WebElement passwordField = driver.findElement(By.cssSelector("input[type=\"password\"]"));
                 wait.until(drvr -> passwordField.isDisplayed());
                 return true;

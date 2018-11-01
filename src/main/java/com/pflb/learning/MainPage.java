@@ -4,40 +4,25 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPage extends AbstractPage {
 
-    @FindBy(css = "[aria-label^=\"Аккаунт Google:\"]")
+    @FindBy(xpath = "//*[starts-with(@href,'https://accounts.google.com/SignOut')]")
     private WebElement profileContainer;
 
-    @FindBy(xpath = ".//*[text()='Написать']/..")
+    @FindBy(xpath = "(//div[2]/div/div/div/div/div/*[@role='button'])[3]")
     private WebElement btnCompose;
 
-    @FindBy(css = "textarea[name=\"to\"]")
-    private WebElement txtTo;
+    @FindBy(xpath = "//div[@role='main']//tr[@jsaction]")
+    private WebElement tblMails;
 
-    @FindBy(css = "input[name=\"subjectbox\"]")
-    private WebElement txtSubject;
-
-    @FindBy(xpath = "(.//*[@aria-label='Тело письма'])[2]")
-    private WebElement txtMessageBody;
-
-    @FindBy(css = "[aria-label^=\"Отправить\"]")
-    private WebElement btnSend;
-
-    @FindBy(css = "[aria-label^=\"Сохранить и закрыть\"]")
-    private WebElement btnSaveNClose;
-
-    @FindBy(css = "[title^=\"Черновики\"]")
-    private WebElement btnDrafts;
-//
-//    @FindBy(xpath = "//*[@id=\":9j\"]/div/div[2]/div")
-//    private WebElement elementDraftsCounter;
-
-  //  private int draftsCounter;
-
-    @FindBy(xpath = "//table/tbody/tr[1]")
-    private WebElement btnFirstMail;
+    @FindBy(xpath = "//div[3]/div[1]/div[1]/div/div/div[5]/div")
+    private WebElement btnRefresh;
 
     public MainPage(WebDriver driver) {
         super(driver);
@@ -53,91 +38,86 @@ public class MainPage extends AbstractPage {
         btnCompose.click();
     }
 
-    public void fillTo(String email) {
-        txtTo.sendKeys(email);
-    }
-
-    public void fillSubject(String subject) {
-        txtSubject.sendKeys(subject);
-    }
-
-    public void fillMessage(String message) {
-        txtMessageBody.click();
-        txtMessageBody.sendKeys(message);
-    }
-
-    public void clickSavenClose() {
-//        if (elementDraftsCounter.isDisplayed()) {
-//            draftsCounter = Integer.parseInt(elementDraftsCounter.getText());
-//        } else {
-//            draftsCounter = 0;
-//        }
-        //System.out.println(draftsCounter);
-        btnSaveNClose.click();
-    }
-
     public void clickDrafts() {
-        //driver.findElement(By.cssSelector("[title^=\"Черновики\"]")).click();
-        driver.get("https://mail.google.com/mail/u/0/#drafts");
-    }
-
-    public void clickFirstMail(String subject) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("//*[text()='");
-        sb.append(subject);
-        sb.append("']/../../..");
         try {
-            WebElement fmail = driver.findElement(By.xpath(sb.toString()));
-            fmail.click();
+            WebElement btnDrafts = driver.findElement(By.xpath("//a[contains(@href,'#drafts')]"));
+            btnDrafts.click();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.urlContains("#drafts"));
         }
         catch(org.openqa.selenium.StaleElementReferenceException ex)
         {
-            WebElement fmail = driver.findElement(By.xpath(sb.toString()));
-            fmail.click();
+            WebElement btnDrafts = driver.findElement(By.xpath("//a[contains(@href,'#drafts')]"));
+            btnDrafts.click();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.urlContains("#drafts"));
         }
     }
 
-    public String getMailBody() {
+
+    public List<String> GetMailSubjects() {
+        List<WebElement> subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
+        List<WebElement> subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+        List<String> subjectsStr = new ArrayList<>();
+        for(WebElement subject: subjects) {
+            subjectsStr.add(subject.getText());
+        }
+        return subjectsStr;
+    }
+
+    public void clickMail(String subject) {
+        List<WebElement> subjects;
+        List<WebElement> subjectsButtons;
+        List<String> subjectsStr = new ArrayList<>();
         try {
-            txtMessageBody = driver.findElement(By.xpath("(.//*[@aria-label='Тело письма'])[2]"));
-            wait.until(drvr -> txtMessageBody.isDisplayed());
-            return txtMessageBody.getText();
-        } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-            txtMessageBody = driver.findElement(By.xpath("(.//*[@aria-label='Тело письма'])[2]"));
-            wait.until(drvr -> txtMessageBody.isDisplayed());
-            return txtMessageBody.getText();
+            subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
+            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+            for(WebElement subj: subjects) {
+                subjectsStr.add(subj.getText());
+            }
+        } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
+            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+            for (WebElement subj : subjects) {
+                subjectsStr.add(subj.getText());
+            }
         }
-    }
 
-    public void clickSend() {
-        btnSend = driver.findElement(By.cssSelector("[aria-label^='Отправить']"));
-        btnSend.click();
+        int i = subjectsStr.indexOf(subject);
+        subjectsButtons.get(i).click();
     }
 
     public void clickSent() {
-        driver.get("https://mail.google.com/mail/u/0/#sent");
+        try {
+            WebElement btnSent = driver.findElement(By.xpath("//a[contains(@href,'#sent')]"));
+            btnSent.click();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.urlContains("#sent"));
+        } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            WebElement btnSent = driver.findElement(By.xpath("//a[contains(@href,'#sent')]"));
+            WebElement oldTblMail = driver.findElement(By.xpath("//div[@role='main' and not(contains(@style,'display:none'))]"));
+            btnSent.click();
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.urlContains("#sent"));
+            wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOf(oldTblMail)));
+        }
     }
 
-    public String getSentTo() {
-        WebElement txtToSend = driver.findElement(By.xpath("//*[text()='Кому: ']/span"));
-        return txtToSend.getText();
-    }
-
-    public String getSentSubject() {
-        WebElement txtSubjectSend = driver.findElement(By.xpath("//*[text()='Кому: ']/../../td[6]//span/span"));
-        return txtSubjectSend.getText();
+    public List<String> getSentTo() {
+        List<WebElement> txtToSend;
+        try {
+            txtToSend = driver.findElements(By.xpath("//div/span[@email]"));
+        } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            txtToSend = driver.findElements(By.xpath("//div/span[@email]"));
+        }
+        List<String> sendStr = new ArrayList<>();
+        for(WebElement send: txtToSend) {
+            sendStr.add(send.getAttribute("email"));
+        }
+        return sendStr;
     }
 
     public String getSentMessage() {
-        try {
-            WebElement firstMessage = driver.findElement(By.xpath("//*[text()='Кому: ']"));
-            wait.until(drvr -> firstMessage.isDisplayed());
-            firstMessage.click();
-        } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-            WebElement firstMessage = driver.findElement(By.xpath("//*[text()='Кому: ']"));
-            wait.until(drvr -> firstMessage.isDisplayed());
-            firstMessage.click();
-        }
         try {
             WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
             wait.until(drvr -> txtMessage.isDisplayed());
@@ -150,8 +130,8 @@ public class MainPage extends AbstractPage {
     }
 
     public void clickLogOut() {
-        driver.findElement(By.cssSelector("[aria-label^=\"Аккаунт Google:\"]")).click();
-        WebElement btnQuit = driver.findElement(By.xpath(".//*[text()='Выйти']"));
+        profileContainer.click();
+        WebElement btnQuit = driver.findElement(By.xpath("//*[starts-with(@href,'https://accounts.google.com/Logout')]"));
         wait.until(drvr -> btnQuit.isDisplayed());
         btnQuit.click();
     }

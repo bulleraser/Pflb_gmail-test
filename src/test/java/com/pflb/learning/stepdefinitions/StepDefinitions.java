@@ -19,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,6 +28,7 @@ public class StepDefinitions {
     LoginPage loginPage = null;
     MainPage mainPage = null;
     StartPage startPage = null;
+    MessageWidgetPage messagePage = null;
     User user;
     String to;
     String subject;
@@ -135,6 +137,7 @@ public class StepDefinitions {
             throw new IllegalArgumentException("Invalid button name:" + btnName);
         }
         mainPage.clickCompose();
+        messagePage = new MessageWidgetPage(driver);
         log.info("Clicked to compose button");
     }
 
@@ -144,7 +147,7 @@ public class StepDefinitions {
             throw new IllegalArgumentException("Invalid field name:" + fieldName);
         }
         to = email;
-        mainPage.fillTo(email);
+        messagePage.fillTo(email);
         log.info("Filled 'to' field with email");
     }
 
@@ -161,7 +164,7 @@ public class StepDefinitions {
             randString.append(symbols.charAt((int) (Math.random() * symbols.length())));
         }
         subject = randString.toString();
-        mainPage.fillSubject(subject);
+        messagePage.fillSubject(subject);
         log.info("Filled subject field with random text");
     }
 
@@ -177,7 +180,7 @@ public class StepDefinitions {
             randString.append(symbols.charAt((int) (Math.random() * symbols.length())));
         }
         message = randString.toString();
-        mainPage.fillMessage(message);
+        messagePage.fillMessage(message);
         log.info("Filled mail body field with random text");
     }
 
@@ -186,7 +189,7 @@ public class StepDefinitions {
         if(!btnName.equals("Сохранить и закрыть")) {
             throw new IllegalArgumentException("Invalid button name:" + btnName);
         }
-        mainPage.clickSavenClose();
+        messagePage.clickSavenClose();
         log.info("Button 'Save and close' clicked");
     }
 
@@ -204,15 +207,19 @@ public class StepDefinitions {
         log.info("Go to drafts");
     }
 
-    @И("^выбирает первое письмо в списке$")
-    public void openFirstLetter() {
-        mainPage.clickFirstMail(subject);
-        log.info("The first mail on page is opened");
+    @И("^выбирает созданное письмо в списке$")
+    public void openCreatedMail() {
+        List<String> subjects = mainPage.GetMailSubjects();
+        //subjects.forEach(System.out::println);
+        Assert.assertTrue(subjects.contains(subject));
+        log.info("The mail is found");
+        mainPage.clickMail(subject);
+        log.info("The mail on page is opened");
     }
 
     @Тогда("^оно то самое только что созданное письмо$")
     public void checkMailInDrafts() {
-        Assert.assertEquals(mainPage.getMailBody(), message);
+        Assert.assertEquals(messagePage.getMailBody(), message);
         log.info("This mail is saved successfully in drafts");
     }
 
@@ -221,7 +228,7 @@ public class StepDefinitions {
         if(!btnName.equals("Отправить")) {
             throw new IllegalArgumentException("Invalid button name:" + btnName);
         }
-        mainPage.clickSend();
+        messagePage.clickSend();
         log.info("Clicked to send this mail");
     }
 
@@ -236,8 +243,9 @@ public class StepDefinitions {
 
     @Тогда("^наже письмо появилось в отправленных$")
     public void checkSentMail() {
-        Assert.assertEquals(to.startsWith(mainPage.getSentTo()), true);
-        Assert.assertEquals(mainPage.getSentSubject(), subject);
+        List<String> emails = mainPage.getSentTo();
+        Assert.assertTrue(emails.contains(to));
+        mainPage.clickMail(subject);
         log.info("The message is added to sent list");
         Assert.assertEquals(mainPage.getSentMessage(), message);
         log.info("The message is successfully sent");
@@ -252,7 +260,7 @@ public class StepDefinitions {
     @Тогда("^выход произошел успешно$")
     public void checkLogOut() {
         loginPage = new LoginPage(driver);
-        Assert.assertEquals(loginPage.checkFillPassword(), true);
+        Assert.assertTrue(loginPage.checkFillPassword());
         log.info("Log out successful. Loaded login page now");
     }
 }
