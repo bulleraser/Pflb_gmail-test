@@ -1,12 +1,10 @@
 package com.pflb.learning;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 public class StartPage extends AbstractPage{
-    @FindBy(xpath = "/html/body/nav/div/a[2]")
-    private WebElement btnSignIn;
 
     {
         driver.get("https://www.google.com/intl/ru/gmail/about/#");
@@ -17,6 +15,7 @@ public class StartPage extends AbstractPage{
     }
 
     public void signIn() {
+        WebElement btnSignIn = driver.findElement(By.xpath("//a[@data-g-label='Sign in']"));
         btnSignIn.click();
     }
 

@@ -1,53 +1,45 @@
 package com.pflb.learning;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class LoginPage extends AbstractPage {
-    @FindBy(css = "input[type=\"email\"]")
-    private WebElement txtUsername;
-
-    @FindBy(css = "input[type=\"password\"]")
-    private WebElement txtPassword;
-
     private boolean nextCounter = false;
-    @FindBy(xpath = "//*[@id=\"passwordNext\"]/content/span")
-    private WebElement btnPasswordNext;
-
-    @FindBy(xpath = "//*[@id=\"identifierNext\"]/content/span")
-    private WebElement btnLoginNext;
-
-    @FindBy(xpath = "//*[@id=\"headingText\"]/content")
-    private WebElement txtSignIn;
-
-    @FindBy(xpath = "//*[@id=\"headingText\"]/content")
-    private WebElement txtSignOut;
-
 
     public LoginPage(WebDriver driver) {
         super(driver);
     }
 
     public void fillUsername(String text) {
+        WebElement txtUsername = driver.findElement(By.cssSelector("input[type=\"email\"]"));
         txtUsername.sendKeys(text);
     }
 
     public void fillPassword(String text) {
-        wait.until(drvr -> txtPassword.isDisplayed());
-        txtPassword.sendKeys(text);
+        try {
+            WebElement txtPassword = driver.findElement(By.cssSelector("input[type=\"password\"]"));
+            //wait.until(drvr -> txtPassword.isDisplayed());
+            txtPassword.sendKeys(text);
+        } catch(org.openqa.selenium.StaleElementReferenceException ex) {
+            WebElement txtPassword = driver.findElement(By.cssSelector("input[type=\"password\"]"));
+            //wait.until(drvr -> txtPassword.isDisplayed());
+            txtPassword.sendKeys(text);
+        }
     }
 
     public void submit() {
         if(nextCounter) {
+            WebElement btnPasswordNext = driver.findElement(By.xpath("//*[@id=\"passwordNext\"]/content/span"));
             btnPasswordNext.click();
         } else {
+            WebElement btnLoginNext = driver.findElement(By.xpath("//*[@id=\"identifierNext\"]/content/span"));
             btnLoginNext.click();
             nextCounter = !nextCounter;
         }
     }
 
     public String getTextSignIn() {
+        WebElement txtSignIn = driver.findElement(By.xpath("//*[@id=\"headingText\"]/content"));
         return txtSignIn.getText();
     }
 

@@ -4,48 +4,35 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 public class MessageWidgetPage extends AbstractPage {
-
-    @FindBy(css = "textarea[name='to']")
-    private WebElement txtTo;
-
-    @FindBy(css = "input[name='subjectbox']")
-    private WebElement txtSubject;
-
-    //@FindBy(id = ":6w")
-    @FindBy(xpath = "//tbody/tr/td[2]/div[2]/div")
-    private WebElement txtMessageBody;
-
-    @FindBy(xpath = "//div/div[4]/table/tbody/tr/td/div/div[2]")
-    private WebElement btnSend;
-
-    @FindBy(xpath = "//tbody/tr/td[2]/img[3]")
-    private WebElement btnSaveNClose;
 
     public MessageWidgetPage(WebDriver driver) {
         super(driver);
     }
 
     public void fillTo(String email) {
+        WebElement txtTo = driver.findElement(By.cssSelector("textarea[name='to']"));
         txtTo.sendKeys(email);
     }
 
     public void fillSubject(String subject) {
+        WebElement txtSubject = driver.findElement(By.cssSelector("input[name='subjectbox']"));
         txtSubject.sendKeys(subject);
         txtSubject.sendKeys(Keys.TAB);
     }
 
     public void fillMessage(String message) {
-        driver.findElement(By.xpath("//tbody/tr/td[2]/div[2]/div")).sendKeys(message);
+            driver.findElement(By.xpath("//div[@role='textbox']")).sendKeys(message);
     }
 
     public void clickSavenClose() {
+        WebElement btnSaveNClose = driver.findElement(By.xpath("//img[@src='images/cleardot.gif'][3]"));
         btnSaveNClose.click();
     }
 
     public String getMailBody() {
+        WebElement txtMessageBody = driver.findElement(By.xpath("//div[@role='textbox']"));
         try {
             wait.until(drvr -> txtMessageBody.isDisplayed());
             return txtMessageBody.getText();
@@ -56,6 +43,7 @@ public class MessageWidgetPage extends AbstractPage {
     }
 
     public void clickSend() {
+        WebElement btnSend = driver.findElement(By.xpath("//div[@role='button'and@tabindex='1'and@data-tooltip-delay]"));
         btnSend.click();
     }
 }

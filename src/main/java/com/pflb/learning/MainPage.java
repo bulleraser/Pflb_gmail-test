@@ -3,7 +3,6 @@ package com.pflb.learning;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -12,29 +11,20 @@ import java.util.List;
 
 public class MainPage extends AbstractPage {
 
-    @FindBy(xpath = "//*[starts-with(@href,'https://accounts.google.com/SignOut')]")
-    private WebElement profileContainer;
-
-    @FindBy(xpath = "(//div[2]/div/div/div/div/div/*[@role='button'])[3]")
-    private WebElement btnCompose;
-
-    @FindBy(xpath = "//div[@role='main']//tr[@jsaction]")
-    private WebElement tblMails;
-
-    @FindBy(xpath = "//div[3]/div[1]/div[1]/div/div/div[5]/div")
-    private WebElement btnRefresh;
-
     public MainPage(WebDriver driver) {
         super(driver);
+        WebElement profileContainer = driver.findElement(By.xpath("//*[starts-with(@href,'https://accounts.google.com/SignOut')]"));
         wait.until(drvr -> profileContainer.isDisplayed());
     }
 
     public String getCurrentUser() {
+        WebElement profileContainer = driver.findElement(By.xpath("//*[starts-with(@href,'https://accounts.google.com/SignOut')]"));
         String string = profileContainer.getAttribute("aria-label");
         return string.substring(string.indexOf('(') + 1, string.indexOf(')'));
     }
 
     public void clickCompose() {
+        WebElement btnCompose = driver.findElement(By.xpath("(//*[@role='button'and@tabindex='0'and@style='user-select: none;'])[2]"));
         btnCompose.click();
     }
 
@@ -119,17 +109,18 @@ public class MainPage extends AbstractPage {
 
     public String getSentMessage() {
         try {
-            WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
+            WebElement txtMessage = driver.findElement(By.xpath("//div[@role='gridcell']/div"));
             wait.until(drvr -> txtMessage.isDisplayed());
             return txtMessage.getText();
         } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-            WebElement txtMessage = driver.findElement(By.xpath("(//*[@role='gridcell'])[3]/div"));
+            WebElement txtMessage = driver.findElement(By.xpath("//div[@role='gridcell']/div"));
             wait.until(drvr -> txtMessage.isDisplayed());
             return txtMessage.getText();
         }
     }
 
     public void clickLogOut() {
+        WebElement profileContainer = driver.findElement(By.xpath("//*[starts-with(@href,'https://accounts.google.com/SignOut')]"));
         profileContainer.click();
         WebElement btnQuit = driver.findElement(By.xpath("//*[starts-with(@href,'https://accounts.google.com/Logout')]"));
         wait.until(drvr -> btnQuit.isDisplayed());

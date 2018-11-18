@@ -37,7 +37,7 @@ public class StepDefinitions {
 
     @Before
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "C:\\vlad\\inf\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "driver\\chromedriver.exe");
         driver = new ChromeDriver();
         log.info("Chrome driver started");
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -78,27 +78,20 @@ public class StepDefinitions {
         log.info("Opened page " + url);
     }
 
-    @И("^пользователь вводит в поле \"([^\"]*)\" свои данные$")
-    public void setTextToInput(String fieldName) {
-        switch (fieldName) {
-            case "Телефон или адрес эл. почты":
-                loginPage.fillUsername(user.getUsername());
-                log.info("Filled login");
-                break;
-            case "Введите пароль":
-                loginPage.fillPassword(user.getPassword());
-                log.info("Filled password");
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid field name:" + fieldName);
-        }
+    @И("^пользователь вводит свою почту$")
+    public void setLogin() {
+        loginPage.fillUsername(user.getUsername());
+        log.info("Filled login");
     }
 
-    @И("^нажимает кнопку \"([^\"]*)\"$")
-    public void clickNext(String btnName) {
-        if(!btnName.equals("Далее")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^пользователь вводит свой пароль$")
+    public void setPassword() {
+        loginPage.fillPassword(user.getPassword());
+        log.info("Filled password");
+    }
+
+    @И("^нажимает кнопку Далее$")
+    public void clickNext() {
         loginPage.submit();
         log.info("Clicked 'Next' button");
     }
@@ -115,11 +108,8 @@ public class StepDefinitions {
         log.info("User is logged correctly");
     }
 
-    @И("^пользоатель нажимает кнопку \"([^\"]*)\"$")
-    public void clickSignIn(String btnName) {
-        if(!btnName.equals("Войти")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^пользователь нажимает кнопку Войти$")
+    public void clickSignIn() {
         startPage.signIn();
         log.info("Sign in button clicked");
     }
@@ -131,31 +121,22 @@ public class StepDefinitions {
         log.info("Opened login page");
     }
 
-    @Пусть("^пользователь нажимает кнопку \"([^\"]*)\"$")
-    public void composeMail(String btnName) {
-        if(!btnName.equals("Написать")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @Пусть("^пользователь нажимает кнопку Написать$")
+    public void composeMail() {
         mainPage.clickCompose();
         messagePage = new MessageWidgetPage(driver);
         log.info("Clicked to compose button");
     }
 
-    @И("^пользователь вводит в поле \"([^\"]*)\" адрес получателя \"([^\"]*)\"$")
-    public void fillToField(String fieldName, String email) {
-        if(!fieldName.equals("Кому")) {
-            throw new IllegalArgumentException("Invalid field name:" + fieldName);
-        }
+    @И("^пользователь вводит в поле Кому адрес получателя \"([^\"]*)\"$")
+    public void fillToField(String email) {
         to = email;
         messagePage.fillTo(email);
         log.info("Filled 'to' field with email");
     }
 
-    @И("^вводит в поле \"([^\"]*)\" тему письма \"([^\"]*)\"$")
-    public void fillSubjectField(String fieldName, String subjectName) {
-        if(!fieldName.equals("Тема")) {
-            throw new IllegalArgumentException("Invalid field name:" + fieldName);
-        }
+    @И("^вводит тему письма$")
+    public void fillSubjectField() {
         String symbols = "qwertyuiopasdfghjklzxcvbnm";
         StringBuilder randString = new StringBuilder();
         randString.append("Test-");
@@ -168,11 +149,8 @@ public class StepDefinitions {
         log.info("Filled subject field with random text");
     }
 
-    @И("^пользователь вводит в поле \"([^\"]*)\" текст письма$")
-    public void fillTextField(String fieldName) {
-        if(!fieldName.equals("Тело письма")) {
-            throw new IllegalArgumentException("Invalid field name:" + fieldName);
-        }
+    @И("^пользователь вводит в поле Тело письма текст письма$")
+    public void fillTextField() {
         String symbols = "qwertyuiopasdfghjklzxcvbnm0123456789";
         StringBuilder randString = new StringBuilder();
         int count = (int)(Math.random() * 30);
@@ -184,25 +162,14 @@ public class StepDefinitions {
         log.info("Filled mail body field with random text");
     }
 
-    @И("^нажимает крестик \"([^\"]*)\"$")
-    public void pressSaveClose(String btnName) {
-        if(!btnName.equals("Сохранить и закрыть")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^нажимает крестик$")
+    public void pressSaveClose() {
         messagePage.clickSavenClose();
         log.info("Button 'Save and close' clicked");
     }
 
-    @Тогда("^счетчик писем в разделе \"([^\"]*)\" увеличивается на (\\d+)$")
-    public void CheckMailIsSaved(String btnName, int change) {
-        //Assert.assertEquals(change, mainPage.checkDraftsCounterChange());
-    }
-
-    @И("^пользователь переходит в раздел \"([^\"]*)\"$")
-    public void openDrafts(String btnName) {
-        if(!btnName.equals("Черновики")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^пользователь переходит в раздел Черновики$")
+    public void openDrafts() {
         mainPage.clickDrafts();
         log.info("Go to drafts");
     }
@@ -210,7 +177,6 @@ public class StepDefinitions {
     @И("^выбирает созданное письмо в списке$")
     public void openCreatedMail() {
         List<String> subjects = mainPage.GetMailSubjects();
-        //subjects.forEach(System.out::println);
         Assert.assertTrue(subjects.contains(subject));
         log.info("The mail is found");
         mainPage.clickMail(subject);
@@ -223,20 +189,14 @@ public class StepDefinitions {
         log.info("This mail is saved successfully in drafts");
     }
 
-    @И("^нажимает на кнопку \"([^\"]*)\"$")
-    public void pressSend(String btnName) {
-        if(!btnName.equals("Отправить")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^нажимает на кнопку Отправить$")
+    public void pressSend() {
         messagePage.clickSend();
         log.info("Clicked to send this mail");
     }
 
-    @И("^переходим в \"([^\"]*)\"$")
-    public void openSent(String btnName) {
-        if(!btnName.equals("Отправленные")) {
-            throw new IllegalArgumentException("Invalid button name:" + btnName);
-        }
+    @И("^переходим в Отправленные$")
+    public void openSent() {
         mainPage.clickSent();
         log.info("Go to sent");
     }
