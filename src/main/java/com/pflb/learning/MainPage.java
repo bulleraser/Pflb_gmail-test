@@ -24,7 +24,7 @@ public class MainPage extends AbstractPage {
     }
 
     public void clickCompose() {
-        WebElement btnCompose = driver.findElement(By.xpath("(//*[@role='button'and@tabindex='0'and@style='user-select: none;'])[2]"));
+        WebElement btnCompose = driver.findElement(By.xpath("//div[starts-with(@class,'T-I J-J5-Ji T-I-KE L3')]"));
         btnCompose.click();
     }
 
@@ -46,8 +46,8 @@ public class MainPage extends AbstractPage {
 
 
     public List<String> GetMailSubjects() {
-        List<WebElement> subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
-        List<WebElement> subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+        List<WebElement> subjects = driver.findElements(By.xpath("//div[@role='main']//span[@class='bog']/span"));
+        List<WebElement> subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[starts-with(@class,'zA yO')]"));
         List<String> subjectsStr = new ArrayList<>();
         for(WebElement subject: subjects) {
             subjectsStr.add(subject.getText());
@@ -60,14 +60,14 @@ public class MainPage extends AbstractPage {
         List<WebElement> subjectsButtons;
         List<String> subjectsStr = new ArrayList<>();
         try {
-            subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
-            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+            subjects = driver.findElements(By.xpath("//div[@role='main']//span[@class='bog']/span"));
+            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[starts-with(@class,'zA yO')]"));
             for(WebElement subj: subjects) {
                 subjectsStr.add(subj.getText());
             }
         } catch(org.openqa.selenium.StaleElementReferenceException ex) {
-            subjects = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]//td/div/div/div/span/span"));
-            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[@jsaction]"));
+            subjects = driver.findElements(By.xpath("//div[@role='main']//span[@class='bog']/span"));
+            subjectsButtons = driver.findElements(By.xpath("//div[@role='main']//tr[starts-with(@class,'zA yO')]"));
             for (WebElement subj : subjects) {
                 subjectsStr.add(subj.getText());
             }

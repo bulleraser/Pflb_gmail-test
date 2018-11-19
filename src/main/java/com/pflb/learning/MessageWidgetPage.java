@@ -43,7 +43,7 @@ public class MessageWidgetPage extends AbstractPage {
     }
 
     public void clickSend() {
-        WebElement btnSend = driver.findElement(By.xpath("//div[@role='button'and@tabindex='1'and@data-tooltip-delay]"));
+        WebElement btnSend = driver.findElement(By.xpath("//div[starts-with(@class,'T-I J-J5-Ji aoO T-I-atl L3')]"));
         btnSend.click();
     }
 }
